@@ -18,6 +18,14 @@ async function run() {
         const usersCollection = client.db('rythmBazarDB').collection('users');
         const categoriesCollection = client.db('rythmBazarDB').collection('categories');
 
+        // users [GET-single data using email query]
+        app.get('/users', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            res.send(user);
+        })
+
         // users [POST]
         app.post('/users', async (req, res) => {
             const user = req.body;
@@ -31,6 +39,14 @@ async function run() {
             const categories = await categoriesCollection.find(query).toArray();
             res.send(categories);
         })
+
+        // categories [GET-single data]
+        // app.get('/categories/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: Object(id) };
+        //     const category = await categoriesCollection.findOne(query);
+        //     res.send(category);
+        // })
     }
     finally { }
 }
