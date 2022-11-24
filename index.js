@@ -37,6 +37,13 @@ async function run() {
             res.send(sellers);
         })
 
+        // users [GET-only buyers]
+        app.get('/users/buyers', async (req, res) => {
+            const query = { userRole: 'buyer' };
+            const buyers = await usersCollection.find(query).toArray();
+            res.send(buyers);
+        })
+
         // users [POST]
         app.post('/users', async (req, res) => {
             const user = req.body;
