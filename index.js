@@ -17,6 +17,7 @@ async function run() {
     try {
         const usersCollection = client.db('rythmBazarDB').collection('users');
         const categoriesCollection = client.db('rythmBazarDB').collection('categories');
+        const productsCollection = client.db('rythmBazarDB').collection('products');
 
         // users [GET-single data using email query]
         app.get('/users', async (req, res) => {
@@ -47,6 +48,13 @@ async function run() {
         //     const category = await categoriesCollection.findOne(query);
         //     res.send(category);
         // })
+
+        // products [POST]
+        app.post('/products', async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        })
     }
     finally { }
 }
