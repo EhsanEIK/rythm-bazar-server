@@ -65,6 +65,14 @@ async function run() {
             res.send(result);
         })
 
+        // users [DELETE-only seller]
+        app.delete('/users/sellers/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(query);
+            res.send(result);
+        })
+
         /* ============================
                 categories all api
         =============================== */
