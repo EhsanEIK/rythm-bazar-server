@@ -18,6 +18,7 @@ async function run() {
         const usersCollection = client.db('rythmBazarDB').collection('users');
         const categoriesCollection = client.db('rythmBazarDB').collection('categories');
         const productsCollection = client.db('rythmBazarDB').collection('products');
+        const ordersCollection = client.db('rythmBazarDB').collection('orders');
 
         /* ========================
                 users all api
@@ -114,6 +115,16 @@ async function run() {
         app.post('/products', async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
+            res.send(result);
+        })
+
+        /* ============================
+                orders all api
+        =============================== */
+        // orders [POST]
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await ordersCollection.insertOne(order);
             res.send(result);
         })
     }
