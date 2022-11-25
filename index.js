@@ -61,12 +61,31 @@ async function run() {
             next();
         }
 
+        // middleware: verify seller
+        async function verifySeller(req, res, next) {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await usersCollection.findOne(query);
+            if (user?.userRole !== 'seller') {
+                return res.status(401).send({ message: "unauthorized access" });
+            }
+            next();
+        }
+
         // check admin from client side data
         app.get('/users/checkAdmin/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email };
             const user = await usersCollection.findOne(query);
             res.send({ isAdmin: user?.userRole === 'admin' });
+        })
+
+        // check seller from client side data
+        app.get('/users/checkSeller/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const user = await usersCollection.findOne(query);
+            res.send({ isSeller: user?.userRole === 'seller' });
         })
 
         /* ========================
@@ -161,7 +180,7 @@ async function run() {
         })
 
         // products [POST]
-        app.post('/products', async (req, res) => {
+        app.post('/products', verifyJWT, verifySeller, async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
             res.send(result);
