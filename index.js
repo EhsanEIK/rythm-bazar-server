@@ -4,6 +4,7 @@ const port = process.env.PORT || 5000;
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 // middleware
 app.use(cors());
@@ -35,6 +36,7 @@ async function run() {
         const categoriesCollection = client.db('rythmBazarDB').collection('categories');
         const productsCollection = client.db('rythmBazarDB').collection('products');
         const ordersCollection = client.db('rythmBazarDB').collection('orders');
+        const paymentsCollection = client.db('rythmBazarDB').collection('payments');
 
         /* =======================
                     JWT
@@ -230,6 +232,27 @@ async function run() {
             const result = await ordersCollection.insertOne(order);
             res.send(result);
         })
+
+        /* ============================
+                payments api
+        =============================== */
+        // create payment intent
+        app.post('/create-payment-intent', verifyJWT, verifyBuyer, async (req, res) => {
+            const order = req.body;
+            const price = order.price;
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: "usd",
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ],
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            })
+        })
+
     }
     finally { }
 }
