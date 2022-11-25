@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 // middleware
@@ -19,6 +20,16 @@ async function run() {
         const categoriesCollection = client.db('rythmBazarDB').collection('categories');
         const productsCollection = client.db('rythmBazarDB').collection('products');
         const ordersCollection = client.db('rythmBazarDB').collection('orders');
+
+        /* =======================
+                    JWT
+        ========================= */
+        // set jwt and send it to the client side
+        app.post('/jwt', (req, res) => {
+            const userInfo = req.body;
+            const token = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2d" });
+            res.send({ token });
+        })
 
         /* ========================
                 users all api
