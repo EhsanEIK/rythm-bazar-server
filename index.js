@@ -39,6 +39,17 @@ async function run() {
         /* =======================
                     JWT
         ========================= */
+        // verify admin
+        async function verifyAdmin(req, res, next) {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await usersCollection.findOne(query);
+            if (user?.userRole !== 'admin') {
+                return res.status(401).send({ message: "unauthorized access" });
+            }
+            next();
+        }
+
         // set jwt and send it to the client side
         app.post('/jwt', (req, res) => {
             const userInfo = req.body;
@@ -58,14 +69,14 @@ async function run() {
         })
 
         // users [GET-only sellers]
-        app.get('/users/sellers', verifyJWT, async (req, res) => {
+        app.get('/users/sellers', verifyJWT, verifyAdmin, async (req, res) => {
             const query = { userRole: 'seller' };
             const sellers = await usersCollection.find(query).toArray();
             res.send(sellers);
         })
 
         // users [GET-only buyers]
-        app.get('/users/buyers', verifyJWT, async (req, res) => {
+        app.get('/users/buyers', verifyJWT, verifyAdmin, async (req, res) => {
             const query = { userRole: 'buyer' };
             const buyers = await usersCollection.find(query).toArray();
             res.send(buyers);
