@@ -200,6 +200,14 @@ async function run() {
             res.send(products);
         })
 
+        // products [GET-based on seller email]
+        app.get('/products', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const products = await productsCollection.find(query).toArray();
+            res.send(products);
+        })
+
         // products [POST]
         app.post('/products', verifyJWT, verifySeller, async (req, res) => {
             const product = req.body;
@@ -257,6 +265,8 @@ async function run() {
         app.post('/payments', verifyJWT, verifyBuyer, async (req, res) => {
             const payment = req.body;
             const result = await paymentsCollection.insertOne(payment);
+
+            // update order payment status
             const id = payment.orderId;
             const filter = { _id: ObjectId(id) };
             const updateOrderPayment = {
@@ -265,7 +275,17 @@ async function run() {
                     transactionId: payment.transactionId,
                 }
             };
-            const updateResult = await ordersCollection.updateOne(filter, updateOrderPayment);
+            const updateOrderPaymentResult = await ordersCollection.updateOne(filter, updateOrderPayment);
+
+            // update product sales status
+            const productId = payment.productId;
+            const filterProductId = { _id: ObjectId(productId) };
+            const updateProdcutStatus = {
+                $set: {
+                    salesStatus: 'sold'
+                }
+            };
+            const updateProductStatusResult = await productsCollection.updateOne(filterProductId, updateProdcutStatus);
             res.send(result);
         })
 
