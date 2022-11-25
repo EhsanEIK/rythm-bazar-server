@@ -189,6 +189,14 @@ async function run() {
         /* ============================
                 orders all api
         =============================== */
+        // orders [GET-based on email of buyer]
+        app.get('/orders/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { buyerEmail: email };
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders)
+        })
+
         // orders [POST]
         app.post('/orders', async (req, res) => {
             const order = req.body;
