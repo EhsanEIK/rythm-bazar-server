@@ -208,12 +208,20 @@ async function run() {
         /* ============================
                 orders all api
         =============================== */
+        // orders [GET-based on order id]
+        app.get('/orders/payment/:id', verifyJWT, verifyBuyer, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const order = await ordersCollection.findOne(query);
+            res.send(order);
+        })
+
         // orders [GET-based on email of buyer]
         app.get('/orders/:email', verifyJWT, verifyBuyer, async (req, res) => {
             const email = req.params.email;
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
-            res.send(orders)
+            res.send(orders);
         })
 
         // orders [POST]
