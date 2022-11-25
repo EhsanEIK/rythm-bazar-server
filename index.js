@@ -253,6 +253,22 @@ async function run() {
             })
         })
 
+        // payments [POST]
+        app.post('/payments', verifyJWT, verifyBuyer, async (req, res) => {
+            const payment = req.body;
+            const result = await paymentsCollection.insertOne(payment);
+            const id = payment.orderId;
+            const filter = { _id: ObjectId(id) };
+            const updateOrderPayment = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId,
+                }
+            };
+            const updateResult = await ordersCollection.updateOne(filter, updateOrderPayment);
+            res.send(result);
+        })
+
     }
     finally { }
 }
