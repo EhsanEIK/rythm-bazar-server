@@ -200,10 +200,16 @@ async function run() {
             res.send(products);
         })
 
-        // products [GET-based on seller email]
+        // products [GET-based on seller email, otherwise will get all the products]
         app.get('/products', async (req, res) => {
+            let query = {};
             const email = req.query.email;
-            const query = { email: email };
+            if (email) {
+                query = { email: email };
+            }
+            else {
+                query = {};
+            }
             const products = await productsCollection.find(query).toArray();
             res.send(products);
         })
