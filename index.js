@@ -39,7 +39,18 @@ async function run() {
         /* =======================
                     JWT
         ========================= */
-        // verify admin
+        // set jwt and send it to the client side
+        app.post('/jwt', (req, res) => {
+            const userInfo = req.body;
+            const token = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2d" });
+            res.send({ token });
+        })
+
+        /* ===============================================
+               middleware: verify admin, seller, buyer
+               and check admin, seller,buyer GET api
+       ================================================== */
+        // middleware: verify admin
         async function verifyAdmin(req, res, next) {
             const decodedEmail = req.decoded.email;
             const query = { email: decodedEmail };
@@ -50,11 +61,12 @@ async function run() {
             next();
         }
 
-        // set jwt and send it to the client side
-        app.post('/jwt', (req, res) => {
-            const userInfo = req.body;
-            const token = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2d" });
-            res.send({ token });
+        // check admin from client side data
+        app.get('/users/checkAdmin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const user = await usersCollection.findOne(query);
+            res.send({ isAdmin: user?.userRole === 'admin' });
         })
 
         /* ========================
