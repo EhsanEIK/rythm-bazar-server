@@ -72,6 +72,17 @@ async function run() {
             next();
         }
 
+        // middleware: verify buyer
+        async function verifyBuyer(req, res, next) {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await usersCollection.findOne(query);
+            if (user?.userRole !== 'buyer') {
+                return res.status(401).send({ message: "unauthorized access" });
+            }
+            next();
+        }
+
         // check admin from client side data
         app.get('/users/checkAdmin/:email', async (req, res) => {
             const email = req.params.email;
@@ -86,6 +97,14 @@ async function run() {
             const query = { email };
             const user = await usersCollection.findOne(query);
             res.send({ isSeller: user?.userRole === 'seller' });
+        })
+
+        // check buyer from client side data
+        app.get('/users/checkBuyer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email };
+            const user = await usersCollection.findOne(query);
+            res.send({ isBuyer: user?.userRole === 'buyer' });
         })
 
         /* ========================
@@ -190,7 +209,7 @@ async function run() {
                 orders all api
         =============================== */
         // orders [GET-based on email of buyer]
-        app.get('/orders/:email', async (req, res) => {
+        app.get('/orders/:email', verifyJWT, verifyBuyer, async (req, res) => {
             const email = req.params.email;
             const query = { buyerEmail: email };
             const orders = await ordersCollection.find(query).toArray();
