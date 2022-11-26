@@ -235,6 +235,14 @@ async function run() {
             res.send(result);
         })
 
+        // products [DELETE- only product]
+        app.delete('/products/:id', verifyJWT, verifySeller, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productsCollection.deleteOne(query);
+            res.send(result);
+        })
+
         /* ============================
                 orders all api
         =============================== */
@@ -297,7 +305,7 @@ async function run() {
             };
             const updateOrderPaymentResult = await ordersCollection.updateOne(filter, updateOrderPayment);
 
-            // update product sales status
+            // update product sales status  and advertised
             const productId = payment.productId;
             const filterProductId = { _id: ObjectId(productId) };
             const updateProdcutStatus = {
