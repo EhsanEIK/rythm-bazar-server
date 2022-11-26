@@ -322,6 +322,13 @@ async function run() {
         /* ============================
                 reported items api
         =============================== */
+        // reported items [GET]
+        app.get('/reportedItems', verifyJWT, verifyAdmin, async (req, res) => {
+            const query = {};
+            const reportedItems = await reportedItemsCollection.find(reportedItems).toArray();
+            res.send(reportedItems);
+        })
+
         // reported items [POST]
         app.post('/reportedItems', verifyJWT, verifyBuyer, async (req, res) => {
             const reportedItems = req.body;
