@@ -221,6 +221,20 @@ async function run() {
             res.send(result);
         })
 
+        // products [PUT- update the product available status: true]
+        app.put('/products/:id', verifyJWT, verifySeller, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateProdcutsAdvertise = {
+                $set: {
+                    advertised: true,
+                }
+            };
+            const result = await productsCollection.updateOne(filter, updateProdcutsAdvertise, options);
+            res.send(result);
+        })
+
         /* ============================
                 orders all api
         =============================== */
