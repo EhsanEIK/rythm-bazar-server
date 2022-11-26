@@ -37,6 +37,7 @@ async function run() {
         const productsCollection = client.db('rythmBazarDB').collection('products');
         const ordersCollection = client.db('rythmBazarDB').collection('orders');
         const paymentsCollection = client.db('rythmBazarDB').collection('payments');
+        const reportedItemsCollection = client.db('rythmBazarDB').collection('reportedItems');
 
         /* =======================
                     JWT
@@ -315,6 +316,16 @@ async function run() {
                 }
             };
             const updateProductStatusResult = await productsCollection.updateOne(filterProductId, updateProdcutStatus);
+            res.send(result);
+        })
+
+        /* ============================
+                reported items api
+        =============================== */
+        // reported items [POST]
+        app.post('/reportedItems', verifyJWT, verifyBuyer, async (req, res) => {
+            const reportedItems = req.body;
+            const result = await reportedItemsCollection.insertOne(reportedItems);
             res.send(result);
         })
 
