@@ -302,7 +302,8 @@ async function run() {
             const filterProductId = { _id: ObjectId(productId) };
             const updateProdcutStatus = {
                 $set: {
-                    salesStatus: 'sold'
+                    salesStatus: 'sold',
+                    advertised: false,
                 }
             };
             const updateProductStatusResult = await productsCollection.updateOne(filterProductId, updateProdcutStatus);
