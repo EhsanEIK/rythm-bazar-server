@@ -325,7 +325,7 @@ async function run() {
         // reported items [GET]
         app.get('/reportedItems', verifyJWT, verifyAdmin, async (req, res) => {
             const query = {};
-            const reportedItems = await reportedItemsCollection.find(reportedItems).toArray();
+            const reportedItems = await reportedItemsCollection.find(query).toArray();
             res.send(reportedItems);
         })
 
@@ -334,6 +334,20 @@ async function run() {
             const reportedItems = req.body;
             const result = await reportedItemsCollection.insertOne(reportedItems);
             res.send(result);
+        })
+
+        // reported items [DELETE]
+        app.delete('/reportedItems/:id', async (req, res) => {
+            // delete reportedItem from reportedItemsCollection
+            const id = req.params.id;
+            const reportQuery = { _id: ObjectId(id) };
+            const deleteReportItemResult = await reportedItemsCollection.deleteOne(reportQuery);
+
+            // delete product from productsCollection
+            const productId = req.body.itemId;
+            const productQuery = { _id: ObjectId(productId) };
+            const deleteProductResult = await productsCollection.deleteOne(productQuery);
+            res.send(deleteReportItemResult);
         })
 
     }
