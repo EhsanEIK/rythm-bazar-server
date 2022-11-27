@@ -139,8 +139,8 @@ async function run() {
         app.post('/users', async (req, res) => {
             const user = req.body;
             const query = { email: user.email };
-            const existUser = await usersCollection.findOne(user);
-            if (existUser) {
+            const existUser = await usersCollection.findOne(query);
+            if (existUser.email === user.email) {
                 return res.send({ acknowledged: true });
             }
             const result = await usersCollection.insertOne(user);
