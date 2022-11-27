@@ -276,7 +276,7 @@ async function run() {
             const email = req.query.email;
             const query = { sellerEmail: email };
             const myBuyers = await ordersCollection.find(query).project({
-                buyerName: 1, buyerEmail: 1, meetingLocation: 1, productName: 1, paid: 1, transactionId: 1
+                buyerName: 1, buyerEmail: 1, buyerPhoneNumber: 1, productName: 1, meetingLocation: 1, transactionId: 1
             }).toArray();
             console.log(myBuyers)
             res.send(myBuyers);
