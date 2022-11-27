@@ -208,6 +208,8 @@ async function run() {
 
         // products [GET-based on seller email, otherwise will get all the products]
         app.get('/products', async (req, res) => {
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
             let query = {};
             const email = req.query.email;
             if (email) {
@@ -216,8 +218,9 @@ async function run() {
             else {
                 query = {};
             }
-            const products = await productsCollection.find(query).toArray();
-            res.send(products);
+            const products = await productsCollection.find(query).skip(page * size).limit(size).toArray();
+            count = await productsCollection.estimatedDocumentCount();
+            res.send({ products, count });
         })
 
         // products [POST]
