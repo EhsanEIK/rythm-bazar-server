@@ -1,5 +1,5 @@
 ## Project Name: Rythm Bazar Server ##
-### Live Website Link:  https://rythm-bazar-server.vercel.app ###
+### Live Website Link: https://rythm-bazar-server.vercel.app ###
 
 #### Technology: ####
 **Back-End:** Node.js, Express.js, CORS, JWT. <br>
