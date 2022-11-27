@@ -263,6 +263,17 @@ async function run() {
             res.send(orders);
         })
 
+        // orders [GET-based on email query of seller]
+        app.get('/orders', verifyJWT, verifySeller, async (req, res) => {
+            const email = req.query.email;
+            const query = { sellerEmail: email };
+            const myBuyers = await ordersCollection.find(query).project({
+                buyerName: 1, buyerEmail: 1, buyerPhoneNumber: 1, productName: 1, paid: 1, transactionId: 1
+            }).toArray();
+            console.log(myBuyers)
+            res.send(myBuyers);
+        })
+
         // orders [POST]
         app.post('/orders', async (req, res) => {
             const order = req.body;
