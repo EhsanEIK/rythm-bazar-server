@@ -87,7 +87,7 @@ async function run() {
         }
 
         // check admin from client side data
-        app.get('/users/checkAdmin/:email', async (req, res) => {
+        app.get('/users/checkAdmin/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const query = { email };
             const user = await usersCollection.findOne(query);
@@ -95,7 +95,7 @@ async function run() {
         })
 
         // check seller from client side data
-        app.get('/users/checkSeller/:email', async (req, res) => {
+        app.get('/users/checkSeller/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const query = { email };
             const user = await usersCollection.findOne(query);
@@ -103,7 +103,7 @@ async function run() {
         })
 
         // check buyer from client side data
-        app.get('/users/checkBuyer/:email', async (req, res) => {
+        app.get('/users/checkBuyer/:email', verifyJWT, async (req, res) => {
             const email = req.params.email;
             const query = { email };
             const user = await usersCollection.findOne(query);
@@ -114,7 +114,7 @@ async function run() {
                 users all api
         =========================== */
         // users [GET-single data using email query]
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyJWT, async (req, res) => {
             const email = req.query.email;
             const query = { email: email };
             const user = await usersCollection.findOne(query);
@@ -148,7 +148,7 @@ async function run() {
         })
 
         // users [PUT]
-        app.put('/users/sellers/:id', async (req, res) => {
+        app.put('/users/sellers/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
@@ -162,7 +162,7 @@ async function run() {
         })
 
         // users [DELETE-only seller]
-        app.delete('/users/sellers/:id', async (req, res) => {
+        app.delete('/users/sellers/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
@@ -170,7 +170,7 @@ async function run() {
         })
 
         // users [DELETE-only buyer]
-        app.delete('/users/buyers/:id', async (req, res) => {
+        app.delete('/users/buyers/:id', verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
@@ -199,7 +199,7 @@ async function run() {
                 products all api
         =============================== */
         // products [GET-based on category]
-        app.get('/products/:id', async (req, res) => {
+        app.get('/products/:id', verifyJWT, async (req, res) => {
             const categoryId = req.params.id;
             const query = { category: categoryId };
             const products = await productsCollection.find(query).toArray();
@@ -278,12 +278,11 @@ async function run() {
             const myBuyers = await ordersCollection.find(query).project({
                 buyerName: 1, buyerEmail: 1, buyerPhoneNumber: 1, productName: 1, meetingLocation: 1, transactionId: 1
             }).toArray();
-            console.log(myBuyers)
             res.send(myBuyers);
         })
 
         // orders [POST]
-        app.post('/orders', async (req, res) => {
+        app.post('/orders', verifyJWT, async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             res.send(result);
@@ -356,7 +355,7 @@ async function run() {
         })
 
         // reported items [DELETE]
-        app.delete('/reportedItems/:id', async (req, res) => {
+        app.delete('/reportedItems/:id', verifyJWT, verifyAdmin, async (req, res) => {
             // delete reportedItem from reportedItemsCollection
             const id = req.params.id;
             const reportQuery = { _id: ObjectId(id) };
